@@ -1,12 +1,11 @@
 # Project Happy Thoughts API
 
-Replace this readme with your own information about your project.
-
-Start by briefly describing the assignment in a sentence or two. Keep it short and to the point.
+This week I created the backend for my Happy Thoughts twitter like app. https://happythoughtsbyanna.netlify.app/
+The backend has been created with node and express and the thoughts and likes are stored using MongoDB.
 
 ## The problem
 
-Describe how you approached to problem, and what tools and techniques you used to solve it. How did you plan? What technologies did you use? If you had more time, what would be next?
+I started out by creating a Mongoose schema to define the structure of the thoughts collection in the database. I defined GET routes for listing all available endpoints and fetching all thoughts, and POST routes for creating new thoughts and liking a specific thought. My biggest challenges was the debugging issues, Identifying why some actions (e.g., liking a thought or fetching data) didn’t work as expected and resolving them step by step.
 
 ## View it live
 
