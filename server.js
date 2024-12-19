@@ -27,9 +27,25 @@ mongoose
     process.exit(1); // Exit if connection fails
   });
 
-// const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-mongo";
-// mongoose.connect(mongoUrl);
-// mongoose.Promise = Promise;
+// Setting a Schema and model
+const thoughtSchema = new mongoose.Schema({
+  message: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 140,
+  },
+  hearts: {
+    type: Number,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const Thought = mongoose.model("Thought", thoughtSchema);
 
 // Defines the port the app will run on. Defaults to 8080, but can be overridden
 // when starting the server. Example command to overwrite PORT env variable value:
@@ -41,9 +57,63 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Start defining your routes here
-app.get("/", (req, res) => {
-  res.send("Hello Technigo!");
+// Start route
+app.get("/", (request, response) => {
+  const endpoints = listEndpoints(app); // Fetch all available routes
+  response.json({
+    message:
+      "Welcome to the Happy Thoughts API! Below are the available endpoints",
+    endpoints: endpoints, // Send the list of endpoints as JSON
+  });
+});
+
+// Get all thoughts (sorted by most recent)
+app.get("/thoughts", async (request, response) => {
+  try {
+    const thoughts = await Thought.find().sort({ createdAt: -1 }).limit(20);
+    response.status(200).json(thoughts);
+  } catch (err) {
+    response.status(400).json({ error: err.message });
+  }
+});
+
+// Create a new thought
+app.post("/thoughts", async (request, response) => {
+  console.log(request.body); // Log the incoming request body
+  const { message } = request.body;
+
+  try {
+    const newThought = await Thought.create({ message });
+    response.status(201).json(newThought);
+  } catch (err) {
+    response.status(400).json({ error: err.message });
+  }
+});
+
+/// Like a specific thought
+app.post("/thoughts/:thoughtId/like", async (request, response) => {
+  const { thoughtId } = request.params; // Get the thoughtId from the URL params
+  console.log(`Received request to like thought with ID: ${thoughtId}`);
+
+  try {
+    const thought = await Thought.findById(thoughtId); // Find the thought by its ID
+
+    if (!thought) {
+      return response.status(404).json({ error: "Thought not found" });
+    }
+
+    thought.hearts += 1; // Increment the hearts count
+    await thought.save(); // Save the updated thought
+
+    console.log(
+      `Thought liked: ${thought.message} | Hearts: ${thought.hearts}`
+    ); // Log the updated hearts count
+
+    response.status(200).json(thought); // Respond with the updated thought
+  } catch (err) {
+    console.error("Error updating thought:", err);
+    response.status(400).json({ error: err.message });
+  }
 });
 
 // Start the server
