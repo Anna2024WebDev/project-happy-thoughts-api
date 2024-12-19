@@ -72,8 +72,8 @@ app.get("/thoughts", async (request, response) => {
   try {
     const thoughts = await Thought.find().sort({ createdAt: -1 }).limit(20);
     response.status(200).json(thoughts);
-  } catch (err) {
-    response.status(400).json({ error: err.message });
+  } catch (error) {
+    response.status(400).json({ error: error.message });
   }
 });
 
@@ -85,8 +85,8 @@ app.post("/thoughts", async (request, response) => {
   try {
     const newThought = await Thought.create({ message });
     response.status(201).json(newThought);
-  } catch (err) {
-    response.status(400).json({ error: err.message });
+  } catch (error) {
+    response.status(400).json({ error: error.message });
   }
 });
 
@@ -110,9 +110,9 @@ app.post("/thoughts/:thoughtId/like", async (request, response) => {
     ); // Log the updated hearts count
 
     response.status(200).json(thought); // Respond with the updated thought
-  } catch (err) {
-    console.error("Error updating thought:", err);
-    response.status(400).json({ error: err.message });
+  } catch (error) {
+    console.error("Error updating thought:", error);
+    response.status(400).json({ error: error.message });
   }
 });
 
