@@ -4,9 +4,32 @@ import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
 import dotenv from "dotenv";
 
-const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-mongo";
-mongoose.connect(mongoUrl);
-mongoose.Promise = Promise;
+dotenv.config(); // Load environment variables from env. file
+
+// Check if MongoDB string is provided in env. file
+if (!process.env.MONGO_URL) {
+  console.error("Error: MONGO_URL is not defined in the .env file.");
+  process.exit(1); // Stop the app if MONGO_URL is not defined
+} else {
+  console.log("Mongo URL loaded successfully!");
+}
+
+// Connect to Mongo Atlas using connection string from env. file
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/thoughts";
+
+mongoose
+  .connect(mongoUrl)
+  .then(() => {
+    console.log("Successfully connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error.message);
+    process.exit(1); // Exit if connection fails
+  });
+
+// const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/project-mongo";
+// mongoose.connect(mongoUrl);
+// mongoose.Promise = Promise;
 
 // Defines the port the app will run on. Defaults to 8080, but can be overridden
 // when starting the server. Example command to overwrite PORT env variable value:
