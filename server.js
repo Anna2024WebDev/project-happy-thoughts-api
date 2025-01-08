@@ -93,21 +93,19 @@ app.post("/thoughts", async (request, response) => {
 /// Like a specific thought
 app.post("/thoughts/:thoughtId/like", async (request, response) => {
   const { thoughtId } = request.params; // Get the thoughtId from the URL params
-  console.log(`Received request to like thought with ID: ${thoughtId}`);
+
+  //   const thought = await Thought.findById(thoughtId); // Find the thought by its ID
 
   try {
-    const thought = await Thought.findById(thoughtId); // Find the thought by its ID
+    const updatedThought = await Thought.findByIdAndUpdate(
+      thoughtId,
+      { $inc: { hearts: 1 } }, // Increment the hearts count
+      { new: true } // Return the updated document
+    );
 
-    if (!thought) {
+    if (!updatedThought) {
       return response.status(404).json({ error: "Thought not found" });
     }
-
-    thought.hearts += 1; // Increment the hearts count
-    await thought.save(); // Save the updated thought
-
-    console.log(
-      `Thought liked: ${thought.message} | Hearts: ${thought.hearts}`
-    ); // Log the updated hearts count
 
     response.status(200).json(thought); // Respond with the updated thought
   } catch (error) {
