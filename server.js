@@ -6,22 +6,12 @@ import dotenv from "dotenv";
 
 dotenv.config(); // Load environment variables from env. file
 
-// Check if MongoDB string is provided in env. file
-if (!process.env.MONGO_URL) {
-  console.error("Error: MONGO_URL is not defined in the .env file.");
-  process.exit(1); // Stop the app if MONGO_URL is not defined
-} else {
-  console.log("Mongo URL loaded successfully!");
-}
-
 // Connect to Mongo Atlas using connection string from env. file
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/thoughts";
 
 mongoose
   .connect(mongoUrl)
-  .then(() => {
-    console.log("Successfully connected to MongoDB");
-  })
+  .then(() => {})
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error.message);
     process.exit(1); // Exit if connection fails
@@ -79,7 +69,6 @@ app.get("/thoughts", async (request, response) => {
 
 // Create a new thought
 app.post("/thoughts", async (request, response) => {
-  console.log(request.body); // Log the incoming request body
   const { message } = request.body;
 
   try {
